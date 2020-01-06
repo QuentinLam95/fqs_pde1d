@@ -20,8 +20,8 @@
 #include <stdlib.h>
 #include <math.h>
 
-std::vector<double> Brownian_Motion(const int nb_sim)
+std::vector<double> Brownian_Motion(const int nb_sim);
 
-std::vector<double> Heston_diffusion(const int maturity,double number_paths,double LT_vol,double reversion_rate,double vol_vol,double v0)
+std::vector<double> Heston_diffusion(const int maturity,double number_paths,double LT_vol,double reversion_rate,double vol_vol,double v0);
 
 #endif /* volatility_hpp */
