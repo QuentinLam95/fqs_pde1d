@@ -71,17 +71,17 @@ namespace dauphine
         return m;
     }
 
-    std::vector<double> matrix::produit_mat_vect(matrix& m,std::vector<double>& v)
+    std::vector<double> matrix::produit_mat_vect(std::vector<double>& v)
     {
-    if (v.size()==m.m_nb_cols)
+    if (v.size()==m_nb_cols)
         {
-        std::vector<double> vect(m.m_nb_rows);
-        for(std::size_t i=0;i<m.m_nb_rows;++i)
+        std::vector<double> vect(m_nb_rows);
+        for(std::size_t i=0;i<m_nb_rows;++i)
         {
             double sum=0;
-            for(std::size_t j=0;j<m.m_nb_cols;++j)
+            for(std::size_t j=0;j<m_nb_cols;++j)
             {
-                sum+=m(i,j)*v[j];
+                sum+=m_data[i * m_nb_cols + j]*v[j];
             }
             vect[i]=sum;
         }
@@ -89,7 +89,7 @@ namespace dauphine
         }
     else
         {
-            std::cout<< "Error of matrix dimensions";
+            std::cout<< "Error of m_nb_cols dimensions";
         }
     }
 
