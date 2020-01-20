@@ -5,6 +5,7 @@
 
 #include "Option.hpp"
 #include <string>
+#include <vector>
 
 //Two variable diffusion equation :
 
@@ -22,7 +23,7 @@ class basicPDE {
 		*/
 		virtual double boundary_left(double t, double x, double v) const = 0;
 		virtual double boundary_right(double t, double x, double v) const = 0;
-		virtual double init_cond(double x) const = 0;
+		virtual double init_cond(double x);
 		//virtual double standard_dev() const = 0;
 
 };
@@ -47,9 +48,11 @@ class BS_PDE : public basicPDE {
 
 		double boundary_left(double t = 0.0, double x = 0.0,  double v = 0.0) const;
 		double boundary_right(double t = 0.0, double x = 0.0, double v = 0.0) const;
-
-		double init_cond(double x) const;
+		
+		double init_cond(double x);
+		std::vector<double> init_cond(std::vector<double> X);
 		double standard_dev() ;
+		
 		/*
 		double diff_coeff2(double t, double x, double v) const = 0;
 		double conv_coeff2(double t, double x, double v) const = 0;

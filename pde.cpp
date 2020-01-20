@@ -46,10 +46,16 @@ double BS_PDE::boundary_right(double t, double x, double v) const {
 	}
 }
 
-double BS_PDE::init_cond(double x) const {
+double BS_PDE::init_cond(double x)  {
 	return option->pay_off->operator()(x);
 }
 
+std::vector<double> init_cond(std::vector<double> X)
+{
+	std::vector<double> res(X.size());
+	std::transform(X.begin(), X.end(), res.begin(), [this](double x)->{ return init_cond(x);});
+	return res;
+}
 
 double BS_PDE::standard_dev() {
 	double vol = option->sigma;

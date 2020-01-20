@@ -36,7 +36,7 @@ namespace Solve
         std::vector<double> backward_coefficient(const double& temp);
 		dauphine::matrix transition_matrix(const double& temp);
 		void Crout_Algo_Resolution();
-		std::vector<double> LU_compute(const dauphine::matrix& L, const dauphine::matrix& U, const std::vector<double>& b);
+		std::vector<double> LU_compute( dauphine::matrix& L, dauphine::matrix& U, const std::vector<double>& b);
         std::vector<double> get_price_curve();
 		double get_price(const double& S);
 
@@ -64,6 +64,7 @@ namespace Solve
 		std::string r;
 		std::vector<double> old_result;
 		std::vector<double> new_result;
+
 
     };
 }

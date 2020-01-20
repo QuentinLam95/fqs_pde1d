@@ -115,19 +115,29 @@ namespace Solve
 	{
 		x_values.resize(space_dim - 1, 0.0);
 		new_result.resize(space_dim - 1, 0.0);
-		//filling x_values ; and initial condition in result vector
-		for (auto x = x_values.begin(), auto r = new_result.begin(), double val = x_min + dx; x != x_values.end(); ++x, ++r, val += dx)
+		double val = x_min;
+
+		//filling x_values ;
+		for (auto x = x_values.begin(); x != x_values.end(); ++x)
 		{
-			*x = val;
+			*x = val + dx;
+			val = *x;
+		}
+		//filling  and initial condition in result vector
+		new_result = pde->init_cond(x_values);
+		for (auto r = new_result.begin(); r != new_result.end(); ++r)
+		{
 			*r = pde->init_cond(exp(val));
+			
 		}
 	}
 
 	std::vector<double> matrix_pde_case1::boundary_increment(const double& t)
 	{
+		double dx_2 = pow(dx, 2.0);
 		std::vector<double> boundary_effect;
 		boundary_effect.resize(space_dim -1, 0.0);
-		auto it1 = boundary_effect.begin();
+		auto it1 = boundary_effect.begin(); //check this with prof
 		auto it2 = boundary_effect.back();
 		double left_b = pde->boundary_left(t);
 		double right_b = pde->boundary_right(t, exp(x_max));
@@ -219,7 +229,7 @@ namespace Solve
 
 	}
 
-	std::vector<double> matrix_pde_case1::LU_compute(const dauphine::matrix& L, const dauphine::matrix& U, const std::vector<double>& b)
+	std::vector<double> matrix_pde_case1::LU_compute(dauphine::matrix& L, dauphine::matrix& U, const std::vector<double>& b)
 	{
 		std::vector<double> x(b.size(),0.0);
 		std::vector<double> z(b.size(),0.0);
@@ -253,7 +263,7 @@ namespace Solve
 		int i = 0;
 		while (x_values[i] < x)
 		{
-			++i
+			++i;
 		}
 
 		return new_result[i];
