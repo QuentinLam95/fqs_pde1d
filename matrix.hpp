@@ -21,7 +21,7 @@ namespace dauphine
         std::vector<double> m_data;
         std::size_t nb_rows() const;
         std::size_t nb_cols() const;
-        std::vector<double> produit_mat_vect(matrix& m,std::vector<double>& v);
+        std::vector<double> produit_mat_vect(std::vector<double>& v);
         
         
         void resize(std::size_t nb_rows,std::size_t nb_cols);
