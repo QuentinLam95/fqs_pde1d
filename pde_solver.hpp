@@ -13,6 +13,11 @@
 #include <iostream>
 #include <vector>
 #include <math.h>
+#include "matrix.hpp"
+#include "Option.hpp"
+#include "Payoff.h"
+#include "pde.hpp"
+
 
 
 namespace Solve
@@ -20,29 +25,46 @@ namespace Solve
 
     class matrix_pde_case1
     {
-    public:
-        matrix_pde_case1(std::size_t maturity, double time_path, double sigma, double rate, double theta,  std::size_t number_path_mash, double S_max, double S_min);
-    
-    public: //private at the end of the project
-        std::size_t m_underlying_nb_dimension;
-        std::size_t m_maturity_nb_dimension;
-        std::size_t number_path_underlying();
-        std::size_t m_maturity();
-        
-        double underlying_max;
-        double underling_min;
-        double path_time;
-        double time_product;
-        
-        std::vector<double> forward_coefficient(std::size_t maturity, double time_path,double sigma, double rate, double number_path_mash,double S_max, double S_min, double temp);
-        std::vector<double> present_coefficient(std::size_t maturity, double time_path,double sigma, double rate, double number_path_mash,double S_max, double S_min, double temp);
-        std::vector<double> backward_coefficient(std::size_t maturity, double time_path,double sigma, double rate, double number_path_mash,double S_max, double S_min,  double temp);
-        std::vector<double> matrix_lhs(std::size_t maturity, double time_path,double sigma, double rate, double number_path_mash,double S_max, double S_min,  double theta);
-        std::vector<double> matrix_rhs(std::size_t maturity, double time_path,double sigma, double rate, double number_path_mash,double S_max, double S_min,  double theta);
-        std::vector<double> LU_decomposition(std::size_t maturity, double time_path,double sigma, double rate, double number_path_mash,double S_max, double S_min,  double theta);
-        std::vector<double> Final_solve(std::size_t maturity, double time_path,double sigma, double rate, double number_path_mash,double S_max, double S_min,  double theta);
-        
-        
+	public:
+		matrix_pde_case1(BS_PDE* _pde, double _theta, std::size_t _space_dim, std::size_t _time_dim, double _S0, double _maturity);
+		void calculate_parameters();
+		void set_initial_conditions();
+		std::vector<double> boundary_increment(const double& t);
+
+        std::vector<double> forward_coefficient(const double& temp);
+        std::vector<double> present_coefficient(const double& temp);
+        std::vector<double> backward_coefficient(const double& temp);
+		dauphine::matrix transition_matrix(const double& temp);
+		void Crout_Algo_Resolution();
+		std::vector<double> LU_compute(const dauphine::matrix& L, const dauphine::matrix& U, const std::vector<double>& b);
+        std::vector<double> get_price_curve();
+		double get_price(const double& S);
+
+		
+		//void calculate step_sizes, and Smaxx, Smin
+
+	private: //private at the end of the project
+		/*
+		std::size_t number_path_underlying();
+		std::size_t m_maturity();
+		*/
+
+		BS_PDE* pde;
+		double theta;
+		double S0;
+		double x_max;
+		double x_min;
+		double dx;
+		std::size_t space_dim;
+		std::vector<double> x_values;
+		double dt;
+		double maturity;
+		std::size_t time_dim;
+		std::string l;
+		std::string r;
+		std::vector<double> old_result;
+		std::vector<double> new_result;
+
     };
 }
 #endif /* pde_solver_hpp */
