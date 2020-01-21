@@ -21,7 +21,7 @@ double BS_PDE::diff_coeff(double t, double x, double v) const {
 }
 
 double BS_PDE::conv_coeff(double t, double x, double v) const {
-	return (option->r) - diff_coeff(double t, double x, double v) ;
+	return (option->r) - diff_coeff(t, x, v) ;
 }
 
 double BS_PDE::zero_coeff(double t, double x, double v) const {
@@ -38,29 +38,32 @@ double BS_PDE::boundary_left(double t, double x, double v) const {
 }
 
 double BS_PDE::boundary_right(double t, double x, double v) const {
+	double res = 1.0;
+
 	if (left_boundary_type.compare("D") == 0) {
-		return (x - (option->K) * exp(-(option->r) * ((option->T) - t))); //careful to use exp(x) when calling this function
+		res = (x - (option->K) * exp(-(option->r) * ((option->T) - t))); //careful to use exp(x) when calling this function
 	}
-	else if ((left_boundary_type.compare("N") == 0)) {
-		return 1.0; //valeur de la dérivée à s infini
-	}
+	return res;
 }
 
 double BS_PDE::init_cond(double x)  {
 	return option->pay_off->operator()(x);
 }
 
-std::vector<double> init_cond(std::vector<double> X)
+std::vector<double> BS_PDE::init_cond(std::vector<double> X)
 {
-	std::vector<double> res(X.size());
-	std::transform(X.begin(), X.end(), res.begin(), [this](double x)->{ return init_cond(x);});
+	size_t l = X.size();
+	std::vector<double> res(l);
+	//std::transform(X.begin(), X.end(), res.begin(), [this](double x)->{ return init_cond(x);});
+	std::transform(X.begin(), X.end(), res.begin(),
+		[this](double arg) { return BS_PDE::init_cond(arg); });
 	return res;
 }
 
 double BS_PDE::standard_dev() {
 	double vol = option->sigma;
 	double maturity = option->T;
-	return vol*sqrt(maturity)
+	return vol * sqrt(maturity);
 }
 
 #endif // !1
