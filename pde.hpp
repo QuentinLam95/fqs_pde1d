@@ -23,7 +23,7 @@ class basicPDE {
 		*/
 		virtual double boundary_left(double t, double x, double v) const = 0;
 		virtual double boundary_right(double t, double x, double v) const = 0;
-		virtual double init_cond(double x);
+		//virtual double init_cond(double x) const = 0;
 		//virtual double standard_dev() const = 0;
 
 };

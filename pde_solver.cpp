@@ -66,34 +66,32 @@ namespace Solve
     {
         double dx_2=pow(dx,2.0);
         std::vector<double>b_coef(space_dim-1);
-		auto ptr = b_coef.begin();
-		auto ftr = b_coef.end();
+		//auto ptr = b_coef.begin();
+		//auto ftr = b_coef.back();
 
 		if (l.compare("N") == 0) 
 		{
 			//present coeff + backward coeff because of neumann condition
-			*ptr = 1 + temp * (pde->zero_coeff() + 2 * pde->diff_coeff() / dx_2) + temp * (pde->conv_coeff() / (2 * dx) - pde->diff_coeff() / dx_2);
+			b_coef[0] = 1 + temp * (pde->zero_coeff() + 2 * pde->diff_coeff() / dx_2) + temp * (pde->conv_coeff() / (2 * dx) - pde->diff_coeff() / dx_2);
 		}
 		else
 		{
-			*ptr = 1 + temp * (pde->zero_coeff() + 2 * pde->diff_coeff() / dx_2);
+			b_coef[0] = 1 + temp * (pde->zero_coeff() + 2 * pde->diff_coeff() / dx_2);
 		}
-		++ptr;
 
-		for (auto iter = next(ptr,1); iter != b_coef.back(); ++iter)
+		for (std::size_t i = 1; i < space_dim - 2; ++i)
 		{
-			*iter = 1 + temp * (pde->zero_coeff() + 2 * pde->diff_coeff() / dx_2);
-			++iter;
+			b_coef[i] = 1 + temp * (pde->zero_coeff() + 2 * pde->diff_coeff() / dx_2);
 		}
 
 		if (r.compare("N") == 0)
 		{
 			//present coeff + forward coeff because of neumann condition
-			*ftr = 1 + temp * (pde->zero_coeff() + 2 * pde->diff_coeff() / dx_2) + temp * (pde->conv_coeff() / (2 * dx) - pde->diff_coeff() / dx_2);
+			b_coef[space_dim - 2] = 1 + temp * (pde->zero_coeff() + 2 * pde->diff_coeff() / dx_2) + temp * (pde->conv_coeff() / (2 * dx) - pde->diff_coeff() / dx_2);
 		}
 		else
 		{
-			*ftr = 1 + temp * (pde->zero_coeff() + 2 * pde->diff_coeff() / dx_2);
+			b_coef[space_dim - 2] = 1 + temp * (pde->zero_coeff() + 2 * pde->diff_coeff() / dx_2);
 		}
 
 		return b_coef;
@@ -137,28 +135,29 @@ namespace Solve
 		double dx_2 = pow(dx, 2.0);
 		std::vector<double> boundary_effect;
 		boundary_effect.resize(space_dim -1, 0.0);
-		auto it1 = boundary_effect.begin(); //check this with prof
-		auto it2 = boundary_effect.back();
+		//auto it1 = boundary_effect.begin(); //check this with prof
+		//auto it2 = boundary_effect.back();
 		double left_b = pde->boundary_left(t);
 		double right_b = pde->boundary_right(t, exp(x_max));
 
 		if (l.compare("D") == 0)
 		{
-			*it1 = - left_b * dt * (pde->conv_coeff() / (2 * dx) - pde->diff_coeff() / dx_2); //Boudary times the backward coefficient.
+			boundary_effect[0] = - left_b * dt * (pde->conv_coeff() / (2 * dx) - pde->diff_coeff() / dx_2); //Boudary times the backward coefficient.
 		}
 		else
 		{
-			*it1 = left_b * dx * dt * (pde->conv_coeff() / (2 * dx) - pde->diff_coeff() / dx_2); //Boudary times the backward coefficient.
+			boundary_effect[0] = left_b * dx * dt * (pde->conv_coeff() / (2 * dx) - pde->diff_coeff() / dx_2); //Boudary times the backward coefficient.
 		}
 
 		if (r.compare("D") == 0)
 		{
-			*it2 = -right_b * dt * (-pde->conv_coeff() / (2 * dx) - pde->diff_coeff() / dx_2); //Boudary times the forward coefficient.
+			boundary_effect[space_dim - 2] = -right_b * dt * (-pde->conv_coeff() / (2 * dx) - pde->diff_coeff() / dx_2); //Boudary times the forward coefficient.
 		}
 		else
 		{
-			*it2 = right_b * dx * dt * (-pde->conv_coeff() / (2 * dx) - pde->diff_coeff() / dx_2); //Boudary times the forward coefficient.
+			boundary_effect[space_dim - 2] = right_b * dx * dt * (-pde->conv_coeff() / (2 * dx) - pde->diff_coeff() / dx_2); //Boudary times the forward coefficient.
 		}
+		return boundary_effect;
 	}
     
 	dauphine::matrix matrix_pde_case1::transition_matrix(const double& temp)
@@ -221,8 +220,8 @@ namespace Solve
 			old_result = new_result;
 			t = maturity - i * dt; // think about && rvalue lvalue;
 			tmp = boundary_increment(t);
-			v = M_rhs.produit_mat_vect(M_rhs, old_result);
-			std::transform(tmp.begin(), tmp.end(), v.begin(), std::plus<double>());
+			v = M_rhs.produit_mat_vect(old_result);
+			std::transform(tmp.begin(), tmp.end(), v.begin(), v.begin(), std::plus<double>());
 
 			new_result = LU_compute(L, U, v);
 		}
