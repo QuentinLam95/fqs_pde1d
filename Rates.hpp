@@ -33,4 +33,6 @@ double sigma_r,double r0);
 
 void print(std::vector<double> v); //Function to print values of a vector
 
+double test() const = 0.0;
+
 #endif /* Rates_hpp */
